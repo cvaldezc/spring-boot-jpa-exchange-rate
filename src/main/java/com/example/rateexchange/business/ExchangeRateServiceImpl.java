@@ -36,19 +36,19 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
         .doOnError(ex -> log.error("{}", ex));
   }
 
-  private ExchangeRateResponse processTransaction(ExchangeRates source, ExchangeRateRequest req) {
-    ExchangeRateResponse res = new ExchangeRateResponse();
+  private ExchangeRateResponse processTransaction(ExchangeRates source, ExchangeRateRequest payload) {
+    ExchangeRateResponse response = new ExchangeRateResponse();
     Currency currency = new Currency();
     currency.setOrigin(source.getOriginCurrency());
     currency.setTarget(source.getTargetCurrency());
-    res.setCurrency(currency);
+    response.setCurrency(currency);
     // transaction
-    BigDecimal amountRate = source.getRate().multiply(req.getAmount());
+    BigDecimal amountRate = source.getRate().multiply(payload.getAmount());
     TransactionInformation tx = new TransactionInformation();
-    tx.setAmount(req.getAmount());
+    tx.setAmount(payload.getAmount());
     tx.setAmountRate(amountRate);
     tx.setExchangeRate(source.getRate());
-    res.setTransactionInformation(tx);
-    return res;
+    response.setTransactionInformation(tx);
+    return response;
   }
 }
