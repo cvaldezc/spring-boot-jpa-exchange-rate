@@ -2,20 +2,21 @@ package com.example.rateexchange.thirdparty;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
 
-@Entity(name = "ExchangeRates")
-@Getter
-@Setter
+import lombok.Data;
+
+@Entity
+@Table(name = "EXCHANGERATES")
+@Data
 public class ExchangeRates implements Serializable {
 
-  private static final long serialVersion = 1L;
+  private static final long serialVersionUID = 1L;
 
   @Id
   @GeneratedValue

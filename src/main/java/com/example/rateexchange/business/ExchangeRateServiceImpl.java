@@ -3,15 +3,19 @@ package com.example.rateexchange.business;
 import com.example.rateexchange.models.Currency;
 import com.example.rateexchange.models.ExchangeRateRequest;
 import com.example.rateexchange.models.ExchangeRateResponse;
+import com.example.rateexchange.models.TransactionInformation;
 import com.example.rateexchange.thirdparty.ExchangeRates;
 import com.example.rateexchange.thirdparty.RateExchangeRepository;
+
 import io.reactivex.Single;
-import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 
 @Service
-@NoArgsConstructor
 @Slf4j
 public class ExchangeRateServiceImpl implements ExchangeRateService {
 
@@ -23,24 +27,28 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
 
   @Override
   public Single<ExchangeRateResponse> getRateExchange(ExchangeRateRequest payload) {
-    log.info(payload.getAmount().toString());
-    log.info(payload.getCurrency().getOrigin());
-    log.info("{}", rateDao
-    .findByCurrencyOriginAndCurrencyTarget(payload.getCurrency().getOrigin(), payload.getCurrency().getTarget()));
+    
     return Single
         .fromCallable(() -> rateDao
-        .findByCurrencyOriginAndCurrencyTarget(payload.getCurrency().getOrigin(), payload.getCurrency().getTarget())
+        .findByOriginCurrencyAndTargetCurrency(payload.getCurrency().getOrigin(), payload.getCurrency().getTarget())
         )
-        .map(this::processTransaction)
+        .zipWith(Single.just(payload), this::processTransaction)
         .doOnError(ex -> log.error("{}", ex));
   }
 
-  private ExchangeRateResponse processTransaction(ExchangeRates source) {
+  private ExchangeRateResponse processTransaction(ExchangeRates source, ExchangeRateRequest req) {
     ExchangeRateResponse res = new ExchangeRateResponse();
     Currency currency = new Currency();
     currency.setOrigin(source.getOriginCurrency());
     currency.setTarget(source.getTargetCurrency());
     res.setCurrency(currency);
+    // transaction
+    BigDecimal amountRate = source.getRate().multiply(req.getAmount());
+    TransactionInformation tx = new TransactionInformation();
+    tx.setAmount(req.getAmount());
+    tx.setAmountRate(amountRate);
+    tx.setExchangeRate(source.getRate());
+    res.setTransactionInformation(tx);
     return res;
   }
 }
