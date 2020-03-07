@@ -1,4 +1,4 @@
-package com.example.rateexchange.models;
+package com.example.rateexchange.models.post;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;

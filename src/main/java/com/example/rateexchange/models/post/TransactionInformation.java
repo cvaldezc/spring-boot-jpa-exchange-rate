@@ -1,4 +1,4 @@
-package com.example.rateexchange.models;
+package com.example.rateexchange.models.post;
 
 import java.math.BigDecimal;
 import lombok.Data;

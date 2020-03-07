@@ -1,4 +1,4 @@
-package com.example.rateexchange.models;
+package com.example.rateexchange.models.post;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
